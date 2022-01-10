@@ -3,3 +3,8 @@ type Block @entity {
   number: Int!
   date: Date
 }
+
+type StakingEra @entity {
+  id: ID!
+  startedAtBlock: Block!
+}

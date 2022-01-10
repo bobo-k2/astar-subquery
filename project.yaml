@@ -6,9 +6,10 @@ repository: ''
 schema:
   file: ./schema.graphql
 network:
-  genesisHash: '0xf1cf9022c7ebb34b162d5b5e34e705a5a740b2d0ecc1009fb89023e62a488108'
+  # genesisHash: '0xf1cf9022c7ebb34b162d5b5e34e705a5a740b2d0ecc1009fb89023e62a488108'
   # endpoint: wss://rpc.shiden.astar.network
-  endpoint: ws://localhost:9944
+  genesisHash: '0x741d2e4345f8382729e51c347b878f5451645f9758054bed4c029cb41815ea45'
+  endpoint: ws://host.docker.internal:9944
 dataSources:
   - kind: substrate/Runtime
     startBlock: 1
@@ -17,10 +18,10 @@ dataSources:
       handlers:
         - handler: handleBlock
           kind: substrate/BlockHandler
-        - handler: handleEvent
+        - handler: handleNewEra
           kind: substrate/EventHandler
           filter:
             module: dappsStaking
-            method: BondAndStake
+            method: NewDappStakingEra
         - handler: handleCall
           kind: substrate/CallHandler
