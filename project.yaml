@@ -23,5 +23,10 @@ dataSources:
           filter:
             module: dappsStaking
             method: NewDappStakingEra
+        - handler: handleNewContract
+          kind: substrate/EventHandler
+          filter:
+            module: dappsStaking
+            method: NewContract
         - handler: handleCall
           kind: substrate/CallHandler

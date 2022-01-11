@@ -8,3 +8,9 @@ type StakingEra @entity {
   id: ID!
   startedAtBlock: Block!
 }
+
+type Dapp @entity {
+  id: ID!
+  era: StakingEra #TODO fetch current era and link
+  developer: String!
+}

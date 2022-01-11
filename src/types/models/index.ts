@@ -6,3 +6,5 @@ export {Block} from "./Block"
 
 export {StakingEra} from "./StakingEra"
 
+export {Dapp} from "./Dapp"
+
