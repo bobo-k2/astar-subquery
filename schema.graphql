@@ -7,10 +7,20 @@ type Block @entity {
 type StakingEra @entity {
   id: ID!
   startedAtBlock: Block!
+  staked: BigInt!
+  claimed: BigInt!
 }
 
 type Dapp @entity {
   id: ID!
-  era: StakingEra #TODO fetch current era and link
+  era: StakingEra!
   developer: String!
+}
+
+type DappStake @entity {
+  id: ID!
+  dapp: Dapp!
+  amount: BigInt!
+  staker: String!
+  era: StakingEra!
 }

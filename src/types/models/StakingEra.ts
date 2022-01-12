@@ -16,6 +16,10 @@ export class StakingEra implements Entity {
 
     public startedAtBlockId: string;
 
+    public staked: bigint;
+
+    public claimed: bigint;
+
 
     async save(): Promise<void>{
         let id = this.id;

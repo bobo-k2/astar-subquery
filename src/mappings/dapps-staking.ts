@@ -1,13 +1,21 @@
 import { SubstrateEvent } from "@subql/types";
-import { Dapp, StakingEra } from "../types";
+import { Codec } from '@polkadot/types/types';
+import { Balance } from '@polkadot/types/interfaces';
+import { v4 as uuidv4 } from 'uuid';
+import { Dapp, DappStake, StakingEra } from "../types";
+
+const getContractAddress = (contract: Codec): string => JSON.parse(contract.toString())['evm'];
 
 export async function handleNewEra(event: SubstrateEvent): Promise<void> {
   const era = event.event.data[0];
   const blockHash = event.block.block.header.hash;
   logger.info('NEW ERA ' + era.toString() + ', ' + blockHash.toString());
+
   const record = new StakingEra(era.toString())
   record.startedAtBlockId = blockHash.toString();
-  record.save();
+  record.staked = BigInt(0);
+  record.claimed = BigInt(0);
+  await record.save();
 }
 
 export async function handleNewContract(event: SubstrateEvent): Promise<void> {
@@ -16,11 +24,68 @@ export async function handleNewContract(event: SubstrateEvent): Promise<void> {
       data: [developer, contract_id]
     }
   } = event;
-
+  
   logger.info('NEW CONTRACT ' + contract_id.toString());
-  const contract: string = JSON.parse(contract_id.toString())['evm'];
+  const era = await api.query.dappsStaking.currentEra();
+  const contract: string = getContractAddress(contract_id);
   const record = new Dapp(contract);
   record.developer = developer.toString();
-  record.save();
+  record.eraId = era.toString();
+  await record.save();
 }
+
+export async function handleStake(event: SubstrateEvent): Promise<void> {
+  const {
+    event: {
+      data: [staker, contract_id, value_to_stake]
+    }
+  } = event;
+  
+  logger.info('STAKE ' + staker.toString() + ', ' + contract_id.toString() + ', ' + value_to_stake.toString());
+  const contract: string = getContractAddress(contract_id);
+  const balance = (value_to_stake as Balance).toBigInt();
+  const id = new Date().valueOf().toString() + '_' + contract;
+  const era = await api.query.dappsStaking.currentEra();
+  
+  const record = new DappStake(id);
+  record.dappId = contract;
+  record.staker = staker.toString();
+  record.amount = balance;
+  record.eraId = era.toString();
+  await record.save();
+
+  const stakingEra = await StakingEra.get(era.toString());
+  if(stakingEra) {
+    stakingEra.staked += balance;
+    await stakingEra.save();
+  }
+}
+
+export async function handleUnstake(event: SubstrateEvent): Promise<void> {
+  const {
+    event: {
+      data: [staker, contract_id, value_to_unstake]
+    }
+  } = event;
+  
+  logger.info('UNSTAKE ' + staker.toString() + ', ' + contract_id.toString() + ', ' + value_to_unstake.toString());
+  const contract: string = getContractAddress(contract_id);
+  const balance = (value_to_unstake as Balance).toBigInt();
+  const id = new Date().valueOf().toString() + '_' + contract;
+  const era = await api.query.dappsStaking.currentEra();
+  
+  const record = new DappStake(id);
+  record.dappId = contract;
+  record.staker = staker.toString();
+  record.amount = -balance;
+  record.eraId = era.toString();
+  await record.save();
+
+  const stakingEra = await StakingEra.get(era.toString());
+  if(stakingEra) {
+    stakingEra.claimed += balance;
+    await stakingEra.save();
+  }
+}
+
 

@@ -8,7 +8,8 @@ schema:
 network:
   # genesisHash: '0xf1cf9022c7ebb34b162d5b5e34e705a5a740b2d0ecc1009fb89023e62a488108'
   # endpoint: wss://rpc.shiden.astar.network
-  genesisHash: '0x741d2e4345f8382729e51c347b878f5451645f9758054bed4c029cb41815ea45'
+  # genesisHash: '0x741d2e4345f8382729e51c347b878f5451645f9758054bed4c029cb41815ea45'
+  genesisHash: '0x7ffac718c4cc0b566a72d2e691cfd70638be736dc6a46177b72a11cc8a381187'
   endpoint: ws://host.docker.internal:9944
 dataSources:
   - kind: substrate/Runtime
@@ -28,5 +29,15 @@ dataSources:
           filter:
             module: dappsStaking
             method: NewContract
+        - handler: handleStake
+          kind: substrate/EventHandler
+          filter:
+            module: dappsStaking
+            method: BondAndStake
+        - handler: handleUnstake
+          kind: substrate/EventHandler
+          filter:
+            module: dappsStaking
+            method: UnbondUnstakeAndWithdraw
         - handler: handleCall
           kind: substrate/CallHandler

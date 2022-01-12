@@ -14,7 +14,7 @@ export class Dapp implements Entity {
 
     public id: string;
 
-    public eraId?: string;
+    public eraId: string;
 
     public developer: string;
 

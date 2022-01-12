@@ -8,3 +8,5 @@ export {StakingEra} from "./StakingEra"
 
 export {Dapp} from "./Dapp"
 
+export {DappStake} from "./DappStake"
+
