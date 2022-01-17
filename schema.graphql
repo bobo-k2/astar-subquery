@@ -7,6 +7,8 @@ type Block @entity {
 type StakingEra @entity {
   id: ID!
   startedAtBlock: Block!
+  startDate: Date!
+  finishDate: Date
   staked: BigInt!
   claimed: BigInt!
 }

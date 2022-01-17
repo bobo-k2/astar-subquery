@@ -16,6 +16,10 @@ export class StakingEra implements Entity {
 
     public startedAtBlockId: string;
 
+    public startDate: Date;
+
+    public finishDate?: Date;
+
     public staked: bigint;
 
     public claimed: bigint;

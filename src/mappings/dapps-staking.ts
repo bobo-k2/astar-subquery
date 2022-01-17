@@ -16,15 +16,24 @@ const getCurrentEra = async (): Promise<string> => {
 
 
 export async function handleNewEra(event: SubstrateEvent): Promise<void> {
-  const era = event.event.data[0];
+  const era = event.event.data[0].toString();
   const blockHash = event.block.block.header.hash;
   logger.info('NEW ERA ' + era.toString() + ', ' + blockHash.toString());
 
-  const record = new StakingEra(era.toString())
+  const record = new StakingEra(era)
   record.startedAtBlockId = blockHash.toString();
+  record.startDate = event.block.timestamp;
   record.staked = BigInt(0);
   record.claimed = BigInt(0);
   await record.save();
+
+  // finish previous era
+  const previousEraNumber = parseInt(era) - 1;
+  const previousEra = await StakingEra.get(previousEraNumber.toString());
+  if (previousEra) {
+    previousEra.finishDate = record.startDate;
+    await previousEra.save();
+  }
 }
 
 export async function handleNewContract(event: SubstrateEvent): Promise<void> {
