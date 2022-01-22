@@ -1,5 +1,5 @@
 # astar-subquery
-SubQuery indexer for Astar network dApps staking proof of concept
+SubQuery indexer for Astar network dApps Staking proof of concept
 
 - Run docker
 - Run Astar node on local machine 
